@@ -1,0 +1,45 @@
+{
+  "name": "tweenity",
+  "version": "1.0.0",
+  "description": "wip",
+  "keywords": [
+    "tweenity"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/wareset/tweenity#readme",
+  "bugs": {
+    "url": "https://github.com/wareset/tweenity/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wareset/tweenity.git"
+  },
+  "author": "rease <cftcview@gmail.com>",
+  "main": "index",
+  "module": "index.mjs",
+  "types": "types/index.d.ts",
+  "files": [
+    "README.md",
+    "index.d.ts",
+    "index.js",
+    "index.mjs",
+    "types/**/*"
+  ],
+  "exports": {
+    "./package.json": "./package.json",
+    ".": {
+      "import": "./index.mjs",
+      "require": "./index.js",
+      "types": "./types/index.d.ts"
+    }
+  },
+  "scripts": {
+    "build": "dester -m",
+    "dev": "dester -mw"
+  },
+  "devDependencies": {
+    "dester": "1.0.x",
+    "typescript": "^5.2.2",
+    "math-safe": "1.0.x"
+  }
+}
