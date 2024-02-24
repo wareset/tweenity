@@ -12,19 +12,19 @@ type ITask = {
   // time
   t: number
   // easing
-  easing: (n: number) => number
+  e: (n: number) => number
   // delay
-  delay: number
+  d: number
   // duration
-  duration: number
+  m: number
   // elapsed
   b: number
   // tween
   s: Tweenity<any>
   // yoyo
-  yoyo: boolean
+  y: boolean
   // repeat
-  repeat: boolean | number
+  r: boolean | number
   // from
   f: any
   // to
@@ -114,30 +114,30 @@ const calc = (task: ITask, t: number) => {
   let offset = task.o
   if (t > offset) {
     const tween = task.s
-    if (!offset) task.t = task.delay + t
+    if (!offset) task.t = task.d + t
     else offset -= t
     if (tween.paused || DEFAULTS.paused) {
       task.t -= offset
     } else if (t >= task.t) {
-      const duration = task.duration
+      const duration = task.m
       const elapsed = (task.b -= task.c ? offset : ((task.c = true), 0))
       // const elapsed = (task.b -= offset)
       if (elapsed < duration) {
-        run_on_update(tween, task.i(task.easing(elapsed / duration)))
+        run_on_update(tween, task.i(task.e(elapsed / duration)))
       } else {
-        run_on_update(tween, task.i(task.easing(1)))
+        run_on_update(tween, task.i(task.e(1)))
         // @ts-ignore
         if (tween._.task === task) {
-          const repeat = task.repeat
+          const repeat = task.r
           const is_num = repeat === +repeat
           if (is_num ? repeat > 0 : repeat) {
             const now = tween.now
-            const yoyo = task.yoyo
+            const yoyo = task.y
             tween.to(yoyo ? task.f : (((tween as any).now = task.f), now), {
               yoyo,
-              easing: task.easing,
-              delay: task.delay,
-              duration: duration,
+              easing: task.e,
+              delay: task.d,
+              duration: task.m,
               repeat: is_num ? repeat - 1 : repeat
             })
             // @ts-ignore
@@ -145,7 +145,7 @@ const calc = (task: ITask, t: number) => {
             // @ts-ignore
             if ((task = tween._.task)) {
               task.o = t
-              task.t = task.delay + t
+              task.t = task.d + t
             }
           } else {
             remove_queue_item(tween)
@@ -257,13 +257,13 @@ export class Tweenity<T extends TweenityValue> {
         c: false,
         o: 0,
         t: 0,
-        easing: options.easing || _.easing,
-        delay: select_val(options.delay, _.delay),
-        duration: select_val(options.duration, _.duration),
+        e: options.easing || _.easing,
+        d: select_val(options.delay, _.delay),
+        m: select_val(options.duration, _.duration),
         b: 0,
         s: this,
-        yoyo: select_val(options.yoyo, _.yoyo),
-        repeat: select_val(options.repeat, _.repeat),
+        y: select_val(options.yoyo, _.yoyo),
+        r: select_val(options.repeat, _.repeat),
         f: from,
         // @ts-ignore
         i: get_interpolator(from, to)
