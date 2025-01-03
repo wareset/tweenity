@@ -16,6 +16,8 @@ type ITask = {
   d: number
   // duration
   m: number
+  // elapsed
+  c: number
   // tween
   s: Tweenity<any>
   // yoyo
@@ -53,10 +55,9 @@ const select_val = (a: any, b: any) => (a != null ? a : b)
 //   }
 //   return object_is(a, b)
 // }
-// x === y ? x !== 0 || 1 / x === 1 / y : x !== x && y !== y
+
 const is_not_equal_deep = (a: any, b: any) => {
-  // if (a === a ? a !== b : b === b) {
-  if (a === b ? a === 0 && 1 / a !== 1 / b : a === a || b === b) {
+  if (a === a ? a !== b : b === b) {
     if (a && b && typeof a === 'object' && typeof b === 'object') {
       for (let k in b) if (is_not_equal_deep(a[k], b[k])) return true
       return false
@@ -100,17 +101,53 @@ const get_interpolator = (a: any, b: any) => {
 }
 
 const calc = (task: ITask, t: number) => {
-  const tween = task.s
-  if (tween.paused || DEFAULTS.paused) {
-    task.o = 0
-  } else {
-    if (task.o && (task.d += t - task.o) > 0) {
-      const coef = task.d / task.m
-      task.i || (task.i = get_interpolator(tween.now, task.t))
-      coef < 1
-        ? run_on_update(tween, task.i(task.e(coef)), 1 - coef)
-        : (remove_queue_item(tween), run_on_update(tween, task.i(1), 0))
+  let offset = task.o
+  if (t > offset) {
+    if (!offset) {
+      // task.v = task.d + t
+      task.d += t
+    } else {
+      const tween = task.s
+      offset -= t
+      if (tween.paused || DEFAULTS.paused) {
+        task.d -= offset
+      } else if (t >= task.d) {
+        const duration = task.m
+        const elapsed = (task.c -= offset)
+        const coef = elapsed < duration ? elapsed / duration : 1
+        task.i || (task.i = get_interpolator(tween.now, task.t))
+
+        coef < 1
+          ? run_on_update(tween, task.i(task.e(coef)), coef)
+          : (remove_queue_item(tween), run_on_update(tween, task.i(1), 1))
+
+        // if (elapsed < duration) {
+        //   run_on_update(tween, task.i(task.e(elapsed / duration)))
+        // } else {
+        //   run_on_update(tween, task.i(task.e(1)))
+        //   // @ts-ignore
+        //   if (tween._.task === task) {
+        //     const yoyo = task.y
+        //     const is_num = yoyo === +yoyo
+        //     if (is_num ? yoyo > 0 : yoyo) {
+        //       tween.to(task.f, {
+        //         yoyo: is_num ? yoyo - 1 : yoyo,
+        //         easing: task.e,
+        //         delay: task.d,
+        //         duration: task.m
+        //       })
+        //       // @ts-ignore
+        //       // if ((task = tween._.task)) {
+        //       //   ;(task.o = t), (task.v = task.d + t)
+        //       // }
+        //     } else {
+        //       remove_queue_item(tween)
+        //     }
+        //   }
+        // }
+      }
     }
+
     task.o = t
   }
 }
@@ -225,8 +262,9 @@ export class Tweenity<T extends TweenityValue> {
         o: 0,
         // v: 0,
         e: options.easing || _.easing,
-        d: -select_val(options.delay, _.delay),
+        d: select_val(options.delay, _.delay),
         m: select_val(options.duration, _.duration),
+        c: 0,
         s: this,
         // y: select_val(options.yoyo, _.yoyo),
         // r: select_val(options.repeat, _.repeat),

@@ -5,7 +5,6 @@ type ITask = {
     e: (n: number) => number;
     d: number;
     m: number;
-    c: number;
     s: Tweenity<any>;
     t: any;
     i: ReturnType<typeof get_interpolator> | null;
@@ -18,7 +17,7 @@ export declare const DEFAULTS: {
     duration: number;
     easing: (x: number) => number;
 };
-export type TweenityValue = (readonly TweenityValue[] | []) | {
+export type TweenityValue = (readonly unknown[] | []) | {
     [key: string]: TweenityValue;
 } | (object | null | undefined | boolean | number | bigint | string | symbol | ((...a: any[]) => any));
 export type TweenityOptions<T extends TweenityValue> = {

@@ -7,31 +7,31 @@
 //                                || window[vendors[x]+'CancelRequestAnimationFrame'];
 // }
 
-let _performance: any
-let _cancelAnimationFrame: typeof cancelAnimationFrame
-let _requestAnimationFrame: typeof requestAnimationFrame
+let _perf: any
+let cAF: typeof cancelAnimationFrame
+let rAF: typeof requestAnimationFrame
 
-_requestAnimationFrame =
+rAF =
   typeof requestAnimationFrame === 'function'
-    ? ((_cancelAnimationFrame = cancelAnimationFrame), requestAnimationFrame)
+    ? ((cAF = cancelAnimationFrame), requestAnimationFrame)
     : // @ts-ignore
     typeof oRequestAnimationFrame === 'function'
     ? // @ts-ignore
-      ((_cancelAnimationFrame = oCancelAnimationFrame), oRequestAnimationFrame)
+      ((cAF = oCancelAnimationFrame), oRequestAnimationFrame)
     : // @ts-ignore
     typeof msRequestAnimationFrame === 'function'
     ? // @ts-ignore
-      ((_cancelAnimationFrame = msCancelAnimationFrame), msRequestAnimationFrame)
+      ((cAF = msCancelAnimationFrame), msRequestAnimationFrame)
     : // @ts-ignore
     typeof mozRequestAnimationFrame === 'function'
     ? // @ts-ignore
-      ((_cancelAnimationFrame = mozCancelAnimationFrame), mozRequestAnimationFrame)
+      ((cAF = mozCancelAnimationFrame), mozRequestAnimationFrame)
     : // @ts-ignore
     typeof webkitRequestAnimationFrame === 'function'
     ? // @ts-ignore
-      ((_cancelAnimationFrame = webkitCancelAnimationFrame), webkitRequestAnimationFrame)
-    : ((_cancelAnimationFrame = clearTimeout),
-      (_performance = typeof performance === 'object' ? performance : Date),
-      (callback: (t: number) => any) => setTimeout(() => callback(_performance.now()), 16))
+      ((cAF = webkitCancelAnimationFrame), webkitRequestAnimationFrame)
+    : ((cAF = clearTimeout),
+      (_perf = typeof performance === 'object' ? performance : Date),
+      (callback: (t: number) => any) => setTimeout(() => callback(_perf.now()), 16))
 
-export { _requestAnimationFrame, _cancelAnimationFrame }
+export { rAF as _requestAnimationFrame, cAF as _cancelAnimationFrame }
