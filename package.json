@@ -39,7 +39,9 @@
   },
   "devDependencies": {
     "dester": "1.0.x",
-    "math-safe": "1.1.0",
-    "typescript": "5.7.2"
+    "math-safe": "1.1.0"
+  },
+  "peerDependencies": {
+    "typescript": "5.x"
   }
 }
